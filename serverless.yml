@@ -1,0 +1,68 @@
+service: serverless-demo
+provider:
+  name: aws
+  runtime: nodejs4.3
+  stage: dev # Set the default stage used. Default is dev
+  profile: serverless # The AWS credentials profile to use with this service
+  region: us-east-1
+  environment:
+    DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+resources:
+  Resources:
+    AppointmentsDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: id
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.DYNAMODB_TABLE}
+functions:
+  hello:
+    handler: handler.hello
+  booksCreate: # A Function
+    handler: books/create.create
+    events: # The Events that trigger this Function
+      - http:
+          path: books
+          method: post
+          cors: true
+  booksGet: # A Function
+    handler: books/get.get
+    events: # The Events that trigger this Function
+      - http:
+          path: books/{id}
+          method: get
+          cors: true
+  booksList: # A Function
+    handler: books/list.list
+    events: # The Events that trigger this Function
+      - http:
+          path: books
+          method: get
+          cors: true
+  booksDelete: # A Function
+    handler: books/delete.delete
+    events: # The Events that trigger this Function
+      - http:
+          path: books/{id}
+          method: delete
+          cors: true

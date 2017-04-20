@@ -1,0 +1,17 @@
+{
+  "name": "serverless-demo",
+  "version": "0.0.1",
+  "description": "Serverless module dependencies",
+  "author": "randika@randika.com",
+  "license": "MIT",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/randika/serverless-demo"
+  },
+  "keywords": [],
+  "dependencies": {
+    "aws-sdk": "^2.20.0",
+    "uuid": "^3.0.1"
+  }
+}
